@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(cat /tmp/quiz-dev.log | head -30)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(mkdir -p /Users/dericyee/Desktop/ai-career-quiz/.claude)",
+      "mcp__Claude_Preview__preview_start",
+      "WebFetch(domain:sigmaschool.co)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" https://sigmaschool.co)",
+      "Bash(curl -sL -A \"Mozilla/5.0\" -o /Users/dericyee/Desktop/ai-career-quiz/public/sigma-logo.png \"https://www.sigmaschool.co/assets/logo.png\")"
+    ]
+  }
+}
