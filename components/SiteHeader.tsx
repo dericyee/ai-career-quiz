@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import SigmaLogo from "./SigmaLogo";
-import { ExternalLink } from "lucide-react";
 
 interface SiteHeaderProps {
   showRetake?: boolean;
@@ -11,34 +10,36 @@ interface SiteHeaderProps {
 
 export default function SiteHeader({ showRetake, showQuizMeta }: SiteHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/85 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
-        <Link href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <SigmaLogo href="" variant="compact" />
+    <header className="sticky top-0 z-30 border-b border-white/5 bg-[var(--bg)]/80 backdrop-blur-xl">
+      <div className="max-w-6xl mx-auto px-5 py-3.5 flex items-center justify-between">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
+          <SigmaLogo href="" variant="compact-light" />
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5 text-[12px]">
           {showQuizMeta && (
-            <span className="text-xs text-slate-400 font-medium hidden sm:inline">
-              Free · 2 min
+            <span className="text-zinc-500 font-medium hidden sm:inline tabular-nums">
+              ESC to exit
             </span>
           )}
           {showRetake && (
             <Link
               href="/quiz"
-              className="text-xs sm:text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors"
+              className="text-zinc-400 hover:text-white font-medium transition-colors"
             >
-              Retake quiz
+              ↻ Retake
             </Link>
           )}
           <a
             href="https://sigmaschool.co"
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-600 font-medium transition-colors"
+            className="hidden sm:inline-flex items-center gap-1 text-zinc-500 hover:text-white font-medium transition-colors"
           >
             sigmaschool.co
-            <ExternalLink size={11} />
           </a>
         </div>
       </div>

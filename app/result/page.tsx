@@ -28,18 +28,15 @@ function ResultContent() {
   const result = RESULT_PATHS[topPath];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white relative overflow-hidden">
-      {/* Decorative blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -left-20 w-96 h-96 bg-violet-100/40 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen flex flex-col relative">
+      {/* Ambient grid */}
+      <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
 
       <SiteHeader showRetake />
 
-      <div className="pt-10 pb-10">
+      <main className="relative flex-1">
         <ResultCard result={result} scores={scores} answers={answers} />
-      </div>
+      </main>
 
       <SiteFooter />
     </div>
@@ -51,7 +48,7 @@ export default function ResultPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-500 rounded-full animate-spin" />
+          <div className="w-7 h-7 border-2 border-white/10 border-t-white/70 rounded-full animate-spin" />
         </div>
       }
     >

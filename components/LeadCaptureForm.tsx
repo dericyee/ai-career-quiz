@@ -64,7 +64,7 @@ export default function LeadCaptureForm({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-7">
       <AnimatePresence mode="wait">
         {status === "success" ? (
           <motion.div
@@ -73,104 +73,80 @@ export default function LeadCaptureForm({
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-6"
           >
-            <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle size={28} className="text-emerald-500" />
+            <div className="w-12 h-12 rounded-full border border-emerald-400/30 bg-emerald-400/10 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle size={22} className="text-emerald-400" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2">
-              You&apos;re in!
+            <h3 className="text-xl font-semibold text-white tracking-tight mb-2">
+              You&apos;re in.
             </h3>
-            <p className="text-sm text-slate-600">
-              Your roadmap request has been saved. Bookmark this result page to
-              come back anytime.
+            <p className="text-[14px] text-zinc-400">
+              Bookmark this page — your card lives here.
             </p>
           </motion.div>
         ) : (
           <motion.div key="form" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">
-              Want the full roadmap for your result?
+            <h3 className="text-xl font-semibold text-white tracking-tight mb-2">
+              Get the full roadmap.
             </h3>
-            <p className="text-sm text-slate-500 mb-6">
-              Enter your details and we&apos;ll send you the recommended beginner
-              path, skills to learn, project ideas, and next steps.
+            <p className="text-[13px] text-zinc-400 mb-6">
+              We&apos;ll send the skills, projects, and next steps for your archetype.
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                    Name <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
-                    required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                    Email <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 transition-colors"
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Name"
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+                />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+                />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                    WhatsApp{" "}
-                    <span className="text-slate-400 font-normal">(optional)</span>
-                  </label>
-                  <input
-                    type="tel"
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder="+60 12-345 6789"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                    Current role{" "}
-                    <span className="text-slate-400 font-normal">(optional)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={currentRole}
-                    onChange={(e) => setCurrentRole(e.target.value)}
-                    placeholder="e.g. Admin, Student, Marketing"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 transition-colors"
-                  />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input
+                  type="tel"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  placeholder="WhatsApp (optional)"
+                  className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+                />
+                <input
+                  type="text"
+                  value={currentRole}
+                  onChange={(e) => setCurrentRole(e.target.value)}
+                  placeholder="Current role (optional)"
+                  className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+                />
               </div>
 
               {status === "error" && (
-                <p className="text-sm text-red-500">{errorMsg}</p>
+                <p className="text-[13px] text-red-400">{errorMsg}</p>
               )}
 
               <button
                 type="submit"
                 disabled={status === "loading" || !name || !email}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-black font-semibold text-[14px] transition-all hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed mt-1"
               >
                 {status === "loading" ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" />
-                    Saving...
+                    <Loader2 size={15} className="animate-spin" />
+                    Saving…
                   </>
                 ) : (
                   <>
-                    <Send size={16} />
-                    Send Me My Roadmap
+                    <Send size={14} />
+                    Send my roadmap
                   </>
                 )}
               </button>

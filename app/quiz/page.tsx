@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import QuizCard from "@/components/QuizCard";
 import SiteHeader from "@/components/SiteHeader";
 import { QUESTIONS, calculateScores } from "@/lib/quiz";
@@ -17,19 +16,23 @@ export default function QuizPage() {
   const selectedAnswer = answers[currentQuestion];
   const isLast = currentQuestion === QUESTIONS.length - 1;
 
-  function handleSelect(index: number) {
-    const updated = [...answers];
-    updated[currentQuestion] = index;
-    setAnswers(updated);
-  }
+  const handleSelect = useCallback(
+    (index: number) => {
+      setAnswers((prev) => {
+        const next = [...prev];
+        next[currentQuestion] = index;
+        return next;
+      });
+    },
+    [currentQuestion]
+  );
 
-  function handleNext() {
+  const handleNext = useCallback(() => {
     if (selectedAnswer === null) return;
 
     if (isLast) {
       const answerIndexes = answers.map((a) => (a !== null ? [a] : []));
       const scores = calculateScores(answerIndexes);
-
       const params = new URLSearchParams({
         builder: String(scores.builder),
         automation: String(scores.automation),
@@ -38,45 +41,70 @@ export default function QuizPage() {
         growth: String(scores.growth),
         answers: answers.join(","),
       });
-
       router.push(`/result?${params.toString()}`);
     } else {
       setCurrentQuestion((q) => q + 1);
     }
-  }
+  }, [answers, isLast, router, selectedAnswer]);
 
-  function handleBack() {
-    if (currentQuestion > 0) {
-      setCurrentQuestion((q) => q - 1);
-    }
-  }
+  const handleBack = useCallback(() => {
+    setCurrentQuestion((q) => Math.max(0, q - 1));
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      // Don't intercept while typing in a form field
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (e.key >= "1" && e.key <= "5") {
+        const idx = parseInt(e.key, 10) - 1;
+        if (idx < QUESTIONS[currentQuestion].answers.length) {
+          handleSelect(idx);
+        }
+      } else if (e.key === "Enter") {
+        if (selectedAnswer !== null) handleNext();
+      } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
+        handleBack();
+      } else if (e.key === "ArrowRight") {
+        if (selectedAnswer !== null) handleNext();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [currentQuestion, handleSelect, handleNext, handleBack, selectedAnswer]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 flex flex-col relative overflow-hidden">
-      {/* Soft decorative gradient blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-20 right-0 w-96 h-96 bg-indigo-100/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-100/40 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Ambient background */}
+      <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(99,102,241,0.10), transparent 60%)",
+        }}
+      />
 
       <SiteHeader showQuizMeta />
 
-      <div className="flex-1 flex items-start justify-center pt-10 pb-20 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="w-full"
-        >
-          <QuizCard
-            questionIndex={currentQuestion}
-            selectedAnswer={selectedAnswer}
-            onSelect={handleSelect}
-            onNext={handleNext}
-            onBack={handleBack}
-            isLast={isLast}
-          />
-        </motion.div>
+      <div className="flex-1 flex items-center justify-center py-16 relative">
+        <QuizCard
+          questionIndex={currentQuestion}
+          selectedAnswer={selectedAnswer}
+          onSelect={handleSelect}
+          onNext={handleNext}
+          onBack={handleBack}
+          isLast={isLast}
+        />
       </div>
     </div>
   );

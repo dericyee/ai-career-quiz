@@ -19,109 +19,104 @@ const STATS = [
 
 export default function SigmaCTA() {
   return (
-    <div className="relative">
-      <div className="relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-2xl overflow-hidden relative"
-        >
-          {/* Decorative grid */}
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-            }}
-          />
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className="relative rounded-3xl overflow-hidden border border-white/10"
+      style={{
+        background:
+          "linear-gradient(180deg, #0e0e12 0%, #15151b 100%)",
+      }}
+    >
+      {/* Decorative top gradient */}
+      <div
+        className="absolute inset-x-0 top-0 h-64 opacity-60 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(99,102,241,0.30), transparent 70%)",
+        }}
+      />
+      {/* Decorative grid */}
+      <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
 
-          {/* Glow accent */}
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-indigo-500 rounded-full blur-3xl opacity-30" />
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-violet-500 rounded-full blur-3xl opacity-25" />
+      <div className="relative p-7 sm:p-10">
+        <div className="mb-6">
+          <SigmaLogo href="" variant="compact-light" />
+        </div>
 
-          <div className="relative grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <div className="mb-5">
-                <SigmaLogo href="" variant="compact" className="[&_img]:brightness-0 [&_img]:invert" />
+        <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">
+          Built by
+        </p>
+        <h3 className="text-3xl sm:text-4xl font-semibold text-white tracking-[-0.025em] leading-[1.05] mb-5">
+          Beginner to job-ready
+          <br />
+          <span className="text-zinc-500">software developer</span> in 3 months.
+        </h3>
+        <p className="text-[15px] text-zinc-400 leading-relaxed max-w-prose mb-7">
+          Sigma School is a modern AI software engineering bootcamp built for
+          people who didn&apos;t take the traditional CS route — and want proof,
+          not just certificates.
+        </p>
+
+        <ul className="space-y-2.5 mb-8">
+          {POINTS.map((p, i) => (
+            <motion.li
+              key={i}
+              initial={{ opacity: 0, x: -6 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 + i * 0.06 }}
+              className="flex items-start gap-3 text-[14px] text-zinc-300 leading-relaxed"
+            >
+              <CheckCircle2
+                size={15}
+                className="text-emerald-400 flex-shrink-0 mt-1"
+                strokeWidth={2}
+              />
+              {p}
+            </motion.li>
+          ))}
+        </ul>
+
+        {/* Stats strip */}
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          {STATS.map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 + i * 0.06 }}
+              className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 flex items-center gap-3"
+            >
+              <div className="w-9 h-9 rounded-lg bg-white/[0.06] flex items-center justify-center flex-shrink-0">
+                <stat.icon size={16} className="text-zinc-300" />
               </div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-300 mb-3">
-                Who built this quiz
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 leading-tight">
-                From beginner to job-ready software developer in{" "}
-                <span className="bg-gradient-to-r from-indigo-300 to-pink-300 bg-clip-text text-transparent">
-                  3 months
-                </span>
-                .
-              </h2>
-              <p className="text-indigo-100 text-base mb-6 leading-relaxed">
-                Sigma School is a modern AI software engineering bootcamp built
-                for people who didn&apos;t take the traditional CS route — and want
-                proof, not just certificates.
-              </p>
+              <div className="min-w-0">
+                <p className="text-[15px] font-semibold text-white leading-tight truncate">
+                  {stat.label}
+                </p>
+                <p className="text-[10px] text-zinc-500 mt-0.5">{stat.sub}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-              <ul className="space-y-2.5 mb-7">
-                {POINTS.map((p, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 + i * 0.08 }}
-                    className="flex items-start gap-2.5 text-sm text-indigo-100"
-                  >
-                    <CheckCircle2
-                      size={16}
-                      className="text-emerald-400 flex-shrink-0 mt-0.5"
-                    />
-                    {p}
-                  </motion.li>
-                ))}
-              </ul>
-
-              <a
-                href="https://sigmaschool.co"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 font-bold text-sm rounded-xl hover:scale-[1.03] transition-all shadow-lg"
-              >
-                Explore Sigma School
-                <ArrowUpRight
-                  size={16}
-                  className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                />
-              </a>
-            </div>
-
-            {/* Stats panel */}
-            <div className="grid grid-cols-1 gap-3">
-              {STATS.map((stat, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 + i * 0.1 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5 flex items-center gap-4"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center flex-shrink-0">
-                    <stat.icon size={20} className="text-white" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-extrabold text-white leading-tight">
-                      {stat.label}
-                    </p>
-                    <p className="text-xs text-indigo-200 mt-0.5">{stat.sub}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+        <a
+          href="https://sigmaschool.co"
+          target="_blank"
+          rel="noreferrer"
+          className="group inline-flex items-center gap-2 px-5 py-3 bg-white text-black font-semibold text-[14px] rounded-lg hover:bg-zinc-100 transition-colors"
+        >
+          Explore Sigma School
+          <ArrowUpRight
+            size={15}
+            className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          />
+        </a>
       </div>
-    </div>
+    </motion.div>
   );
 }

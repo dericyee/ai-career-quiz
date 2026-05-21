@@ -27,26 +27,26 @@ export default function QuizCard({
   const total = QUESTIONS.length;
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4">
+    <div className="w-full max-w-2xl mx-auto px-5">
       <ProgressBar current={questionIndex + 1} total={total} />
 
       <AnimatePresence mode="wait">
         <motion.div
           key={questionIndex}
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -40 }}
-          transition={{ duration: 0.28, ease: "easeOut" }}
-          className="mt-6"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-8"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-indigo-500 mb-3">
-            Question {questionIndex + 1} of {total}
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3 tabular-nums">
+            Question {String(questionIndex + 1).padStart(2, "0")}
           </p>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug mb-6">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-white leading-[1.15] tracking-[-0.02em] mb-8">
             {question.question}
           </h2>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             {question.answers.map((answer, i) => (
               <AnswerOption
                 key={i}
@@ -60,23 +60,40 @@ export default function QuizCard({
         </motion.div>
       </AnimatePresence>
 
-      <div className="flex items-center justify-between mt-8 gap-3">
+      <div className="flex items-center justify-between mt-10 gap-3">
         <button
           onClick={onBack}
           disabled={questionIndex === 0}
-          className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-medium text-sm transition-all hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-zinc-400 text-[13px] font-medium transition-all hover:text-white hover:bg-white/[0.04] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={14} />
           Back
         </button>
+
+        <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono text-zinc-600 uppercase tracking-wider">
+          <span>Press</span>
+          <kbd className="px-1.5 py-0.5 rounded border border-white/10 bg-white/[0.04] text-zinc-400">
+            1
+          </kbd>
+          <span>–</span>
+          <kbd className="px-1.5 py-0.5 rounded border border-white/10 bg-white/[0.04] text-zinc-400">
+            5
+          </kbd>
+          <span>to choose</span>
+          <span className="mx-1">·</span>
+          <kbd className="px-1.5 py-0.5 rounded border border-white/10 bg-white/[0.04] text-zinc-400">
+            ↵
+          </kbd>
+          <span>to continue</span>
+        </div>
 
         <button
           onClick={onNext}
           disabled={selectedAnswer === null}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-indigo-200 transition-all hover:shadow-indigo-300 hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-black font-semibold text-[13px] transition-all hover:bg-zinc-100 disabled:opacity-30 disabled:cursor-not-allowed"
         >
-          {isLast ? "See My Result" : "Next"}
-          <ArrowRight size={16} />
+          {isLast ? "Reveal my card" : "Continue"}
+          <ArrowRight size={14} />
         </button>
       </div>
     </div>

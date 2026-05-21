@@ -1,9 +1,7 @@
 import Hero from "@/components/Hero";
-import IdentityTeaser from "@/components/IdentityTeaser";
-import PathPreview from "@/components/PathPreview";
-import FinalCTA from "@/components/FinalCTA";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import LandingManifesto from "@/components/LandingManifesto";
 
 export default function Home() {
   return (
@@ -11,9 +9,7 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
-        <IdentityTeaser />
-        <PathPreview />
-        <FinalCTA />
+        <LandingManifesto />
         <SiteFooter />
       </main>
     </>

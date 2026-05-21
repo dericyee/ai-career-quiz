@@ -8,23 +8,22 @@ interface ProgressBarProps {
 }
 
 export default function ProgressBar({ current, total }: ProgressBarProps) {
-  const pct = Math.round((current / total) * 100);
+  const pct = (current / total) * 100;
 
   return (
     <div className="w-full">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-xs font-medium text-slate-500">
-          Question {current} of {total}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-[3px] bg-white/[0.06] rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-white rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          />
+        </div>
+        <span className="text-[11px] font-mono text-zinc-500 tabular-nums tracking-wider">
+          {String(current).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
-        <span className="text-xs font-semibold text-indigo-600">{pct}%</span>
-      </div>
-      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-        <motion.div
-          className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        />
       </div>
     </div>
   );

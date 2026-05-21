@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AnswerOptionProps {
@@ -11,7 +10,7 @@ interface AnswerOptionProps {
   onSelect: (index: number) => void;
 }
 
-const LETTERS = ["A", "B", "C", "D", "E"];
+const KEYS = ["1", "2", "3", "4", "5"];
 
 export default function AnswerOption({
   label,
@@ -22,35 +21,49 @@ export default function AnswerOption({
   return (
     <motion.button
       onClick={() => onSelect(index)}
-      whileTap={{ scale: 0.98 }}
-      initial={{ opacity: 0, y: 10 }}
+      whileTap={{ scale: 0.99 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: index * 0.06 }}
+      transition={{
+        duration: 0.25,
+        delay: index * 0.04,
+        ease: [0.22, 1, 0.36, 1],
+      }}
       className={cn(
-        "w-full text-left px-4 py-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-3 group",
+        "group w-full text-left px-4 py-4 rounded-xl border transition-all duration-200 flex items-center gap-4",
         selected
-          ? "border-indigo-500 bg-indigo-50 shadow-md shadow-indigo-100"
-          : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/40 hover:shadow-sm"
+          ? "border-white/40 bg-white/[0.06]"
+          : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
       )}
     >
+      {/* Number key */}
       <span
         className={cn(
-          "flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-200",
+          "flex-shrink-0 w-7 h-7 rounded-md border flex items-center justify-center text-[11px] font-mono font-bold transition-all duration-200 tabular-nums",
           selected
-            ? "bg-indigo-500 text-white"
-            : "bg-slate-100 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600"
+            ? "border-white/50 bg-white text-black"
+            : "border-white/15 bg-white/[0.04] text-zinc-500 group-hover:text-zinc-300 group-hover:border-white/25"
         )}
       >
-        {selected ? <Check size={14} strokeWidth={3} /> : LETTERS[index]}
+        {KEYS[index]}
       </span>
+
       <span
         className={cn(
-          "text-sm font-medium leading-snug transition-colors duration-200",
-          selected ? "text-indigo-900" : "text-slate-700"
+          "text-[15px] font-medium leading-snug flex-1 transition-colors duration-200",
+          selected ? "text-white" : "text-zinc-300 group-hover:text-zinc-100"
         )}
       >
         {label}
       </span>
+
+      {/* Selected check dot */}
+      <span
+        className={cn(
+          "flex-shrink-0 w-2 h-2 rounded-full transition-all duration-200",
+          selected ? "bg-white opacity-100" : "bg-white/0 opacity-0"
+        )}
+      />
     </motion.button>
   );
 }

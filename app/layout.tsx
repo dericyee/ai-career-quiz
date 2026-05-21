@@ -8,13 +8,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "What Career Path Should You Consider in the AI Era? | Free Quiz",
+  title: "Career Compass — find what you're actually built for",
   description:
-    "Find out whether you're best suited for building software, automating workflows, working with data, creating with AI, or growing digital businesses. Free 2-minute career quiz.",
+    "A 2-minute quiz that gives you a direction, not random advice. Earn your Career Identity Card.",
   openGraph: {
-    title: "What Career Path Should You Consider in the AI Era?",
+    title: "Career Compass — find what you're actually built for",
     description:
-      "Discover your best-fit AI-era skill path. Takes 2 minutes. No degree or coding experience needed.",
+      "A 2-minute quiz. One direction. Earn your Career Identity Card.",
     type: "website",
   },
 };
@@ -26,7 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white font-sans">{children}</body>
+      <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--fg)] font-sans">
+        {children}
+      </body>
     </html>
   );
 }
