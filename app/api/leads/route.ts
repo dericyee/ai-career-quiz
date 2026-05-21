@@ -1,63 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isSupabaseConfigured } from "@/lib/supabase";
-import { createClient } from "@supabase/supabase-js";
+import { saveLeadToAirtable, LeadPayload } from "@/lib/airtable";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-
-  const {
-    name,
-    email,
-    whatsapp,
-    current_role,
-    result_path,
-    builder_score,
-    automation_score,
-    data_score,
-    creative_score,
-    growth_score,
-    answers,
-  } = body;
-
-  if (!name || !email) {
-    return NextResponse.json({ error: "Name and email are required." }, { status: 400 });
+  let body: Partial<LeadPayload>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // Demo mode — no Supabase configured
-  if (!isSupabaseConfigured) {
-    console.log("[Demo mode] Lead would have been saved:", { name, email, result_path });
-    return NextResponse.json({ success: true, demo: true });
+  const { name, email } = body;
+
+  if (!name?.trim() || !email?.trim()) {
+    return NextResponse.json(
+      { error: "Name and email are required." },
+      { status: 400 }
+    );
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  // Prefer service role key for server-side inserts; fall back to anon key
-  const supabaseKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  const { error } = await supabase.from("leads").insert([
-    {
-      name,
-      email,
-      whatsapp: whatsapp || null,
-      current_role: current_role || null,
-      result_path,
-      builder_score,
-      automation_score,
-      data_score,
-      creative_score,
-      growth_score,
-      answers: answers ?? null,
-      source: "career_quiz",
-    },
-  ]);
-
-  if (error) {
-    console.error("Supabase insert error:", error);
-    return NextResponse.json({ error: "Failed to save lead." }, { status: 500 });
+  // Light email shape check
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json(
+      { error: "Please enter a valid email address." },
+      { status: 400 }
+    );
   }
 
-  return NextResponse.json({ success: true });
+  try {
+    const result = await saveLeadToAirtable({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      whatsapp: body.whatsapp ?? null,
+      current_role: body.current_role ?? null,
+      result_path: body.result_path ?? "unknown",
+      builder_score: body.builder_score ?? 0,
+      automation_score: body.automation_score ?? 0,
+      data_score: body.data_score ?? 0,
+      creative_score: body.creative_score ?? 0,
+      growth_score: body.growth_score ?? 0,
+      answers: body.answers ?? null,
+    });
+
+    return NextResponse.json({ success: true, demo: result.demo === true });
+  } catch (err) {
+    console.error("Lead save error:", err);
+    return NextResponse.json(
+      { error: "Failed to save lead. Please try again." },
+      { status: 500 }
+    );
+  }
 }
