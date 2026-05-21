@@ -25,7 +25,7 @@ export interface LeadPayload {
 
 const TOKEN = process.env.AIRTABLE_TOKEN;
 const BASE_ID = process.env.AIRTABLE_BASE_ID;
-const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "Leads";
+const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "AI Career Quiz";
 
 export const isAirtableConfigured = Boolean(TOKEN && BASE_ID);
 
@@ -47,7 +47,7 @@ export async function saveLeadToAirtable(lead: LeadPayload) {
     fields: {
       Name: lead.name,
       Email: lead.email,
-      WhatsApp: lead.whatsapp || "",
+      Phone: lead.whatsapp || "",
       Role: lead.current_role || "",
       Result: lead.result_path,
       "Builder Score": lead.builder_score,
