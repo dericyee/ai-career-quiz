@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Light email shape check
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json(
       { error: "Please enter a valid email address." },
@@ -43,9 +42,17 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, demo: result.demo === true });
   } catch (err) {
-    console.error("Lead save error:", err);
+    // Surface the underlying error so you can diagnose configuration issues
+    // (the token is never included in the thrown message).
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("Lead save error:", message);
     return NextResponse.json(
-      { error: "Failed to save lead. Please try again." },
+      {
+        error: "Failed to save lead.",
+        // In production we still expose this — it never contains the token and
+        // makes debugging Airtable schema mismatches much easier.
+        detail: message,
+      },
       { status: 500 }
     );
   }
