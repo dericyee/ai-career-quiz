@@ -119,12 +119,12 @@ export default function IdentityCard({
 
   const dims =
     size === "lg"
-      ? { w: "w-full max-w-[360px]", aspect: "aspect-[5/7]" }
-      : { w: "w-full max-w-[280px]", aspect: "aspect-[5/7]" };
+      ? { w: "w-full max-w-[360px]", shape: "aspect-[5/7]" }
+      : { w: "w-full max-w-[280px]", shape: "aspect-[5/7]" };
 
   const card = (
     <div
-      className={`relative ${dims.w} ${dims.aspect} rounded-[28px] overflow-hidden`}
+      className={`relative ${dims.w} ${dims.shape} rounded-[28px] overflow-hidden`}
       style={{
         background: meta.gradient,
         boxShadow: `0 30px 80px -20px ${meta.glow}, 0 0 0 1px rgba(255,255,255,0.06) inset`,
@@ -158,16 +158,26 @@ export default function IdentityCard({
           </span>
         </div>
 
-        {/* Icon block */}
-        <div className="flex-1 flex items-center justify-center my-3">
+        {/* Icon block — fixed size, no flex-1 (used to eat space the stats need) */}
+        <div
+          className={`flex items-center justify-center ${
+            showStats ? "mt-3 mb-3" : "flex-1 my-3"
+          }`}
+        >
           <div className="relative">
             <div
               className="absolute inset-0 rounded-full blur-2xl card-shimmer"
               style={{ background: "rgba(255,255,255,0.4)" }}
             />
-            <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-black/15 backdrop-blur-md border border-white/25 flex items-center justify-center">
+            <div
+              className={`relative rounded-full bg-black/15 backdrop-blur-md border border-white/25 flex items-center justify-center ${
+                showStats
+                  ? "w-20 h-20 sm:w-24 sm:h-24"
+                  : "w-28 h-28 sm:w-32 sm:h-32"
+              }`}
+            >
               <Icon
-                size={size === "lg" ? 56 : 44}
+                size={showStats ? (size === "lg" ? 40 : 32) : size === "lg" ? 56 : 44}
                 strokeWidth={1.5}
                 className="text-white"
               />
@@ -176,18 +186,26 @@ export default function IdentityCard({
         </div>
 
         {/* Name + motto */}
-        <div className="text-center mb-4">
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-none">
+        <div className={`text-center ${showStats ? "mb-2" : "mb-4"}`}>
+          <h3
+            className={`font-extrabold text-white tracking-tight leading-none ${
+              showStats ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"
+            }`}
+          >
             {meta.name}
           </h3>
-          <p className="text-[12px] text-white/80 italic mt-2">
+          <p
+            className={`text-white/80 italic ${
+              showStats ? "text-[11px] mt-1.5" : "text-[12px] mt-2"
+            }`}
+          >
             &ldquo;{meta.motto}&rdquo;
           </p>
         </div>
 
-        {/* Stats / score */}
+        {/* Stats / score — pushed to bottom */}
         {showStats && scores ? (
-          <div className="space-y-1.5">
+          <div className="space-y-1 mt-auto">
             {(Object.entries(scores) as [PathKey, number][]).map(
               ([key, val]) => {
                 const isMain = key === pathKey;
@@ -248,7 +266,12 @@ export default function IdentityCard({
         ease: [0.22, 1, 0.36, 1],
       }}
       whileHover={interactive ? { y: -6, rotateY: -3, rotateX: 3 } : undefined}
-      style={{ transformStyle: "preserve-3d", perspective: 1200 }}
+      style={{
+        transformStyle: "preserve-3d",
+        perspective: 1200,
+        width: "100%",
+        maxWidth: size === "lg" ? 360 : 280,
+      }}
       className="will-change-transform"
     >
       {card}

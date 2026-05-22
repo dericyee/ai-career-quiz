@@ -49,9 +49,7 @@ export async function saveLeadToAirtable(lead: LeadPayload) {
     fields: {
       Name: lead.name,
       Email: lead.email,
-      Phone: lead.whatsapp || "",
-      "Country Code": lead.country_code || "",
-      Country: lead.country_iso || "",
+      Phone: lead.whatsapp || "", // combined: "+60 12-345 6789"
       Role: lead.current_role || "",
       Result: lead.result_path,
       "Builder Score": lead.builder_score,
