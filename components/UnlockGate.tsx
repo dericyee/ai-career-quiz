@@ -15,6 +15,8 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { PathKey, Scores } from "@/lib/quiz";
+import { DEFAULT_COUNTRY, Country } from "@/lib/countries";
+import PhoneInput from "./PhoneInput";
 
 const UNLOCKS = [
   {
@@ -69,7 +71,8 @@ export default function UnlockGate({
 }: UnlockGateProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [currentRole, setCurrentRole] = useState("");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -83,6 +86,13 @@ export default function UnlockGate({
     setStatus("loading");
     setErrorMsg("");
 
+    // Combine country code + number into a single E.164-style string,
+    // e.g. "+60 12-345 6789"
+    const trimmedNumber = phoneNumber.trim();
+    const combinedPhone = trimmedNumber
+      ? `${country.dial} ${trimmedNumber}`
+      : null;
+
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
@@ -90,7 +100,9 @@ export default function UnlockGate({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          whatsapp: whatsapp.trim() || null,
+          whatsapp: combinedPhone,
+          country_code: trimmedNumber ? country.dial : null,
+          country_iso: trimmedNumber ? country.iso : null,
           current_role: currentRole.trim() || null,
           result_path: resultPath,
           builder_score: scores.builder,
@@ -269,12 +281,12 @@ export default function UnlockGate({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input
-                    type="tel"
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder="WhatsApp (optional)"
-                    className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+                  <PhoneInput
+                    country={country}
+                    onCountryChange={setCountry}
+                    number={phoneNumber}
+                    onNumberChange={setPhoneNumber}
+                    placeholder="Phone (optional)"
                   />
                   <input
                     type="text"

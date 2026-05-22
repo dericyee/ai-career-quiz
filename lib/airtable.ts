@@ -12,7 +12,9 @@
 export interface LeadPayload {
   name: string;
   email: string;
-  whatsapp?: string | null;
+  whatsapp?: string | null; // combined phone, e.g. "+60 12-345 6789"
+  country_code?: string | null; // dial code, e.g. "+60"
+  country_iso?: string | null; // ISO 3166-1 alpha-2, e.g. "MY"
   current_role?: string | null;
   result_path: string;
   builder_score: number;
@@ -48,6 +50,8 @@ export async function saveLeadToAirtable(lead: LeadPayload) {
       Name: lead.name,
       Email: lead.email,
       Phone: lead.whatsapp || "",
+      "Country Code": lead.country_code || "",
+      Country: lead.country_iso || "",
       Role: lead.current_role || "",
       Result: lead.result_path,
       "Builder Score": lead.builder_score,
