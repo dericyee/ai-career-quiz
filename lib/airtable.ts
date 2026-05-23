@@ -68,19 +68,32 @@ async function airtablePost(table: string, fields: Record<string, unknown>) {
   return res.json();
 }
 
+export interface SaveResult {
+  demo?: boolean;
+  primary: { ok: true } | { ok: false; error: string };
+  freebies: { ok: true } | { ok: false; error: string };
+}
+
 /**
- * Saves the lead to both the main quiz table and the Freebies Signup table.
+ * Saves the lead to both the main quiz table AND the Freebies Signups table.
  * The primary save throws on failure (so the caller can return 500).
- * The freebies save is best-effort — logged but never blocks.
+ * The freebies save is best-effort — captured in the return value but never
+ * blocks the response.
  */
-export async function saveLeadToAirtable(lead: LeadPayload) {
+export async function saveLeadToAirtable(
+  lead: LeadPayload
+): Promise<SaveResult> {
   if (!isAirtableConfigured) {
     console.log("[Airtable demo mode] Lead would be saved:", {
       name: lead.name,
       email: lead.email,
       result: lead.result_path,
     });
-    return { demo: true };
+    return {
+      demo: true,
+      primary: { ok: true },
+      freebies: { ok: true },
+    };
   }
 
   const { first, last } = splitName(lead.name);
@@ -89,7 +102,7 @@ export async function saveLeadToAirtable(lead: LeadPayload) {
   const primaryFields = {
     Name: lead.name,
     Email: lead.email,
-    Phone: lead.whatsapp || "", // combined: "+60 12-345 6789"
+    Phone: lead.whatsapp || "",
     Role: lead.current_role || "",
     Result: lead.result_path,
     "Builder Score": lead.builder_score,
@@ -101,7 +114,7 @@ export async function saveLeadToAirtable(lead: LeadPayload) {
     Source: "career_quiz",
   };
 
-  // Secondary: contact-only record for the Freebies Signup CRM
+  // Secondary: contact-only record for the Freebies Signups CRM table
   const freebiesFields = {
     "First Name": first,
     "Last Name": last,
@@ -110,20 +123,31 @@ export async function saveLeadToAirtable(lead: LeadPayload) {
     Source: "ai-career-quiz",
   };
 
-  // Fire both in parallel. Primary throws on failure; freebies is best-effort.
   const [primaryResult, freebiesResult] = await Promise.allSettled([
     airtablePost(TABLE_NAME, primaryFields),
     airtablePost(FREEBIES_TABLE_NAME, freebiesFields),
   ]);
 
+  // Primary failure → throw so caller returns 500.
   if (primaryResult.status === "rejected") {
     throw primaryResult.reason;
   }
 
+  // Freebies failure → log + capture in return value so the API can surface it.
+  let freebiesOut: SaveResult["freebies"];
   if (freebiesResult.status === "rejected") {
-    // Don't block the user submission on the secondary save — just log.
-    console.error("[Airtable] Freebies Signup save failed:", freebiesResult.reason);
+    const msg =
+      freebiesResult.reason instanceof Error
+        ? freebiesResult.reason.message
+        : String(freebiesResult.reason);
+    console.error("[Airtable] Freebies Signups save failed:", msg);
+    freebiesOut = { ok: false, error: msg };
+  } else {
+    freebiesOut = { ok: true };
   }
 
-  return primaryResult.value;
+  return {
+    primary: { ok: true },
+    freebies: freebiesOut,
+  };
 }

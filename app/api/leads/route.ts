@@ -42,19 +42,19 @@ export async function POST(req: NextRequest) {
       answers: body.answers ?? null,
     });
 
-    return NextResponse.json({ success: true, demo: result.demo === true });
+    // Always return success (primary saved). Surface freebies detail so it's
+    // visible in the browser network tab without needing Vercel logs.
+    return NextResponse.json({
+      success: true,
+      demo: result.demo === true,
+      primary: result.primary,
+      freebies: result.freebies,
+    });
   } catch (err) {
-    // Surface the underlying error so you can diagnose configuration issues
-    // (the token is never included in the thrown message).
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Lead save error:", message);
     return NextResponse.json(
-      {
-        error: "Failed to save lead.",
-        // In production we still expose this — it never contains the token and
-        // makes debugging Airtable schema mismatches much easier.
-        detail: message,
-      },
+      { error: "Failed to save lead.", detail: message },
       { status: 500 }
     );
   }
