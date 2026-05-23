@@ -11,8 +11,8 @@ export default function SiteFooter() {
             variant="compact-light"
           />
           <p className="text-[11px] text-zinc-500 mt-3 max-w-md">
-            Modern AI software engineering bootcamp. Beginner to job-ready
-            in 3 months. Job or 100% refund.
+            The modern AI software engineering bootcamp · Beginner to
+            job-ready AI-native software developer in 3 months.
           </p>
         </div>
 
@@ -29,7 +29,7 @@ export default function SiteFooter() {
             sigmaschool.co ↗
           </a>
           <span className="text-zinc-700">
-            © {new Date().getFullYear()} Sigma School
+            © {new Date().getFullYear()} Sigmaschool
           </span>
         </div>
       </div>

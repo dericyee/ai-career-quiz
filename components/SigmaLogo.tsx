@@ -22,7 +22,7 @@ export default function SigmaLogo({
     <div className={cn("inline-flex items-center gap-2.5", className)}>
       <Image
         src="/sigma-logo.png"
-        alt="Sigma School"
+        alt="Sigmaschool"
         width={isCompact ? 110 : 140}
         height={isCompact ? 22 : 28}
         priority

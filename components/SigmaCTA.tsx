@@ -1,20 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, CheckCircle2, Award, Clock, Users } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Cpu, Hammer, GraduationCap } from "lucide-react";
 import SigmaLogo from "./SigmaLogo";
 
 const POINTS = [
-  "Beginner-friendly: no degree, no prior coding required",
-  "AI-native curriculum — build with the tools shaping the industry",
-  "Project-based learning — graduate with real proof of skill",
-  "Job-focused: 100% refund if you don't get a job",
+  "AI-native curriculum — Cursor, Claude, and AI agents as core skills",
+  "Project-based learning — graduate with real proof of skill, not a certificate",
+  "Beginner-friendly — no degree or prior coding required",
+  "Modern stack — the same tools companies are hiring for right now",
 ];
 
 const STATS = [
-  { icon: Clock, label: "3 months", sub: "to job-ready" },
-  { icon: Users, label: "Beginner", sub: "friendly path" },
-  { icon: Award, label: "100% refund", sub: "if no job" },
+  { icon: GraduationCap, label: "3 months", sub: "programme length" },
+  { icon: Cpu, label: "AI-native", sub: "curriculum" },
+  { icon: Hammer, label: "Real portfolio", sub: "not certificates" },
 ];
 
 export default function SigmaCTA() {
@@ -50,14 +50,15 @@ export default function SigmaCTA() {
           Built by
         </p>
         <h3 className="text-3xl sm:text-4xl font-semibold text-white tracking-[-0.025em] leading-[1.05] mb-5">
-          Beginner to job-ready
+          From beginner to job-ready
           <br />
-          <span className="text-zinc-500">software developer</span> in 3 months.
+          <span className="text-zinc-500">AI-native software developer</span>{" "}
+          in 3 months.
         </h3>
         <p className="text-[15px] text-zinc-400 leading-relaxed max-w-prose mb-7">
-          Sigma School is a modern AI software engineering bootcamp built for
-          people who didn&apos;t take the traditional CS route — and want proof,
-          not just certificates.
+          Sigmaschool is the modern AI software engineering bootcamp built for
+          people who didn&apos;t take the traditional CS route — and want
+          proof, not just certificates.
         </p>
 
         <ul className="space-y-2.5 mb-8">
@@ -81,7 +82,7 @@ export default function SigmaCTA() {
         </ul>
 
         {/* Stats strip */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-10">
           {STATS.map((stat, i) => (
             <motion.div
               key={i}
@@ -104,18 +105,36 @@ export default function SigmaCTA() {
           ))}
         </div>
 
-        <a
-          href="https://sigmaschool.co"
-          target="_blank"
-          rel="noreferrer"
-          className="group inline-flex items-center gap-2 px-5 py-3 bg-white text-black font-semibold text-[14px] rounded-lg hover:bg-zinc-100 transition-colors"
-        >
-          Explore Sigma School
-          <ArrowUpRight
-            size={15}
-            className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-          />
-        </a>
+        {/* DUAL CTA — Primary apply, secondary roadmap */}
+        <div className="space-y-3">
+          <a
+            href="https://sigmaschool.co"
+            target="_blank"
+            rel="noreferrer"
+            className="group flex items-center justify-center gap-2 px-6 py-4 bg-white text-black font-semibold text-[14px] rounded-xl hover:bg-zinc-100 transition-colors w-full"
+            style={{
+              boxShadow: "0 10px 30px -10px rgba(255,255,255,0.25)",
+            }}
+          >
+            Apply for the AI-Native Software Developer Programme
+            <ArrowUpRight
+              size={15}
+              className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </a>
+          <a
+            href="https://sigmaschool.co/roadmap"
+            target="_blank"
+            rel="noreferrer"
+            className="group flex items-center justify-center gap-2 px-6 py-3.5 border border-white/15 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 font-medium text-[13px] rounded-xl transition-colors w-full"
+          >
+            Or get the free roadmap first
+            <ArrowUpRight
+              size={13}
+              className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </a>
+        </div>
       </div>
     </motion.div>
   );
