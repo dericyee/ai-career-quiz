@@ -29,6 +29,22 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Pointer cursor on anything clickable.
+ * Tailwind v4 ships with cursor:default on buttons; we override globally. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href],
+label[for],
+summary,
+[data-clickable] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 /* Selection */
 ::selection {
   background: rgba(129, 140, 248, 0.35);
