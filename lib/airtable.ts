@@ -5,7 +5,7 @@
  *   AIRTABLE_TOKEN                 — Personal Access Token
  *   AIRTABLE_BASE_ID               — starts with "app..."
  *   AIRTABLE_TABLE_NAME            — defaults to "AI Career Quiz"
- *   AIRTABLE_FREEBIES_TABLE_NAME   — defaults to "Freebies Signup"
+ *   AIRTABLE_FREEBIES_TABLE_NAME   — defaults to "Freebies Signups"
  *
  * The same lead is written to BOTH tables in parallel:
  *  - Primary table: full quiz data (scores, archetype, answers, etc.)
@@ -35,7 +35,7 @@ const TOKEN = process.env.AIRTABLE_TOKEN;
 const BASE_ID = process.env.AIRTABLE_BASE_ID;
 const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "AI Career Quiz";
 const FREEBIES_TABLE_NAME =
-  process.env.AIRTABLE_FREEBIES_TABLE_NAME || "Freebies Signup";
+  process.env.AIRTABLE_FREEBIES_TABLE_NAME || "Freebies Signups";
 
 export const isAirtableConfigured = Boolean(TOKEN && BASE_ID);
 
