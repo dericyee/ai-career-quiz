@@ -81,7 +81,14 @@ export default function UnlockGate({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+    if (
+      !name.trim() ||
+      !email.trim() ||
+      !phoneNumber.trim() ||
+      !currentRole.trim()
+    ) {
+      return;
+    }
 
     setStatus("loading");
     setErrorMsg("");
@@ -286,13 +293,15 @@ export default function UnlockGate({
                     onCountryChange={setCountry}
                     number={phoneNumber}
                     onNumberChange={setPhoneNumber}
-                    placeholder="Phone (optional)"
+                    placeholder="Phone number"
+                    required
                   />
                   <input
                     type="text"
                     value={currentRole}
                     onChange={(e) => setCurrentRole(e.target.value)}
-                    placeholder="Current role (optional)"
+                    placeholder="Current role"
+                    required
                     className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
                   />
                 </div>
@@ -305,7 +314,13 @@ export default function UnlockGate({
 
                 <button
                   type="submit"
-                  disabled={status === "loading" || !name || !email}
+                  disabled={
+                    status === "loading" ||
+                    !name.trim() ||
+                    !email.trim() ||
+                    !phoneNumber.trim() ||
+                    !currentRole.trim()
+                  }
                   className="group w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-white text-black font-semibold text-[14px] transition-all hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed mt-1"
                   style={{
                     boxShadow: "0 10px 30px -10px rgba(255,255,255,0.25)",
@@ -325,7 +340,7 @@ export default function UnlockGate({
                 </button>
 
                 <p className="text-[11px] text-zinc-600 text-center mt-2">
-                  Free. No spam. Your card stays yours.
+                  All fields required. No spam. Your card stays yours.
                 </p>
               </motion.form>
             )}

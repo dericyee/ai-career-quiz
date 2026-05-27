@@ -12,6 +12,7 @@ interface PhoneInputProps {
   number: string;
   onNumberChange: (n: string) => void;
   placeholder?: string;
+  required?: boolean;
 }
 
 export default function PhoneInput({
@@ -19,7 +20,8 @@ export default function PhoneInput({
   onCountryChange,
   number,
   onNumberChange,
-  placeholder = "Phone (optional)",
+  placeholder = "Phone number",
+  required = false,
 }: PhoneInputProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -96,6 +98,7 @@ export default function PhoneInput({
           value={number}
           onChange={(e) => onNumberChange(e.target.value)}
           placeholder={placeholder}
+          required={required}
           className="flex-1 px-3 py-3 bg-transparent text-[14px] text-white placeholder:text-zinc-500 focus:outline-none"
         />
       </div>
