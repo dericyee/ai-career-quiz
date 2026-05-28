@@ -1,8 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, CheckCircle2, Cpu, Hammer, GraduationCap } from "lucide-react";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  Cpu,
+  Hammer,
+  GraduationCap,
+  CalendarClock,
+} from "lucide-react";
 import SigmaLogo from "./SigmaLogo";
+import { SIGMA_URL, SIGMA_ROADMAP_URL, SIGMA_MEET_URL } from "@/lib/seo";
 
 const POINTS = [
   "AI-native curriculum — Cursor, Claude, and AI agents as core skills",
@@ -105,10 +113,10 @@ export default function SigmaCTA() {
           ))}
         </div>
 
-        {/* DUAL CTA — Primary apply, secondary roadmap */}
+        {/* CTAs — Primary apply, then book a call, then roadmap */}
         <div className="space-y-3">
           <a
-            href="https://sigmaschool.co"
+            href={SIGMA_URL}
             target="_blank"
             rel="noreferrer"
             className="group flex items-center justify-center gap-2 px-6 py-4 bg-white text-black font-semibold text-[14px] rounded-xl hover:bg-zinc-100 transition-colors w-full"
@@ -122,18 +130,29 @@ export default function SigmaCTA() {
               className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
           </a>
-          <a
-            href="https://sigmaschool.co/roadmap"
-            target="_blank"
-            rel="noreferrer"
-            className="group flex items-center justify-center gap-2 px-6 py-3.5 border border-white/15 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 font-medium text-[13px] rounded-xl transition-colors w-full"
-          >
-            Or get the free roadmap first
-            <ArrowUpRight
-              size={13}
-              className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            />
-          </a>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a
+              href={SIGMA_MEET_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex items-center justify-center gap-2 px-6 py-3.5 border border-indigo-400/30 bg-indigo-400/[0.06] hover:bg-indigo-400/[0.12] text-indigo-100 font-medium text-[13px] rounded-xl transition-colors w-full"
+            >
+              <CalendarClock size={14} />
+              Book a free discovery call
+            </a>
+            <a
+              href={SIGMA_ROADMAP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex items-center justify-center gap-2 px-6 py-3.5 border border-white/15 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-200 font-medium text-[13px] rounded-xl transition-colors w-full"
+            >
+              Get the free roadmap
+              <ArrowUpRight
+                size={13}
+                className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+          </div>
         </div>
       </div>
     </motion.div>

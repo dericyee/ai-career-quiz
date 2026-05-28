@@ -8,6 +8,11 @@ export const SITE_URL =
 
 export const SITE_NAME = "Sigmaschool Career Compass";
 
+/** Sigmaschool destination links (kept in one place for easy edits). */
+export const SIGMA_URL = "https://sigmaschool.co";
+export const SIGMA_ROADMAP_URL = "https://sigmaschool.co/roadmap";
+export const SIGMA_MEET_URL = "https://sig1.co/meet"; // discovery call
+
 export const SITE_TITLE =
   "AI Career Quiz — What career are you actually built for? | Sigmaschool";
 

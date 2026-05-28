@@ -21,7 +21,8 @@
       "Bash(head -60 docs/SEO_STRATEGY.md)",
       "Bash(sed -n '1,80p' src/app/layout.tsx)",
       "Bash(npx eslint *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(cd /tmp && rm -rf ss-web && gh repo clone joinsigma/sigmaschool-web ss-web -- --depth=1 2>&1 | tail -2; cd /tmp/ss-web 2>/dev/null && grep -roiE \"\\(calendly\\\\.com|cal\\\\.com|savvycal|tidycal\\)[^\\\\\"' \\)]*\" --include=\"*.ts\" --include=\"*.tsx\" . 2>/dev/null | grep -v node_modules | sort -u | head; echo \"--- book/discovery/call links ---\"; grep -roiE \"https://[^\\\\\"' \\)]*\\(book|call|discovery|consult|meet\\)[^\\\\\"' \\)]*\" --include=\"*.ts\" --include=\"*.tsx\" . 2>/dev/null | grep -v node_modules | sort -u | head)"
     ]
   }
 }

@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CalendarClock } from "lucide-react";
+import { SIGMA_MEET_URL } from "@/lib/seo";
 
 export default function FinalCTA() {
   return (
@@ -35,16 +36,27 @@ export default function FinalCTA() {
           You&apos;ll know more about yourself than 10 self-help articles
           could&apos;ve told you.
         </p>
-        <Link
-          href="/quiz"
-          className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-700 font-bold text-base rounded-2xl shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-200"
-        >
-          Take the quiz
-          <ArrowRight
-            size={18}
-            className="transition-transform group-hover:translate-x-1"
-          />
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/quiz"
+            className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-700 font-bold text-base rounded-2xl shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-200 w-full sm:w-auto justify-center"
+          >
+            Take the quiz
+            <ArrowRight
+              size={18}
+              className="transition-transform group-hover:translate-x-1"
+            />
+          </Link>
+          <a
+            href={SIGMA_MEET_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center gap-2 px-7 py-4 border border-white/30 text-white font-semibold text-base rounded-2xl hover:bg-white/10 transition-all duration-200 w-full sm:w-auto justify-center"
+          >
+            <CalendarClock size={17} />
+            Book a discovery call
+          </a>
+        </div>
         <p className="text-indigo-200 text-xs mt-5">
           No sign-up required to see your result.
         </p>

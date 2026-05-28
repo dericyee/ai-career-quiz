@@ -13,8 +13,8 @@ export default function Home() {
       <main>
         <Hero />
         <StorySection />
-        <ShareableQuote />
         <GlobalReach />
+        <ShareableQuote />
         <FinalCTA />
         <SiteFooter />
       </main>
