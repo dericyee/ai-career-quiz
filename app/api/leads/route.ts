@@ -33,6 +33,8 @@ export async function POST(req: NextRequest) {
       country_code: body.country_code ?? null,
       country_iso: body.country_iso ?? null,
       current_role: body.current_role ?? null,
+      salary: body.salary ?? null,
+      salary_currency: body.salary_currency ?? null,
       result_path: body.result_path ?? "unknown",
       builder_score: body.builder_score ?? 0,
       automation_score: body.automation_score ?? 0,

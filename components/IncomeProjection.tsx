@@ -2,7 +2,12 @@
 
 import { motion } from "framer-motion";
 import { PathKey } from "@/lib/quiz";
-import { TRAJECTORIES, formatUSD, fiveYearGap } from "@/lib/income";
+import {
+  buildTrajectory,
+  formatMoney,
+  Currency,
+  TRAJECTORY_ANCHOR,
+} from "@/lib/income";
 
 const ACCENT: Record<PathKey, string> = {
   builder: "#a5b4fc",
@@ -12,46 +17,63 @@ const ACCENT: Record<PathKey, string> = {
   growth: "#f9a8d4",
 };
 
+const PATH_VERB: Record<PathKey, string> = {
+  builder: "AI-native builder",
+  automation: "AI automation",
+  data: "data + AI",
+  creative: "creative + AI",
+  growth: "AI growth",
+};
+
 interface IncomeProjectionProps {
   pathKey: PathKey;
+  salary: number;
+  currency: Currency;
 }
 
 // Chart geometry
 const W = 720;
 const H = 360;
-const PAD = { top: 32, right: 24, bottom: 40, left: 52 };
+const PAD = { top: 36, right: 28, bottom: 40, left: 64 };
 const plotW = W - PAD.left - PAD.right;
 const plotH = H - PAD.top - PAD.bottom;
 
-export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
-  const t = TRAJECTORIES[pathKey];
+export default function IncomeProjection({
+  pathKey,
+  salary,
+  currency,
+}: IncomeProjectionProps) {
+  const t = buildTrajectory(pathKey, salary, currency);
   const accent = ACCENT[pathKey];
 
-  const maxVal = Math.max(...t.pathway, ...t.baseline) * 1.08;
-  const minVal = 30000;
+  const maxVal = Math.max(...t.aiNative) * 1.12;
+  const minVal = Math.min(...t.currentRole, salary) * 0.85;
 
-  const x = (i: number) =>
-    PAD.left + (i / (t.points.length - 1)) * plotW;
+  const x = (i: number) => PAD.left + (i / (t.points.length - 1)) * plotW;
   const y = (v: number) =>
     PAD.top + (1 - (v - minVal) / (maxVal - minVal)) * plotH;
 
   const toPath = (vals: number[]) =>
     vals.map((v, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(v)}`).join(" ");
 
-  // Area between pathway and baseline (the "opportunity gap")
   const gapArea =
-    t.pathway.map((v, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(v)}`).join(" ") +
+    t.aiNative.map((v, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(v)}`).join(" ") +
     " " +
-    t.baseline
-      .map((v, i) => `L ${x(t.baseline.length - 1 - i)} ${y(t.baseline[t.baseline.length - 1 - i])}`)
+    t.currentRole
+      .map(
+        (_, i) =>
+          `L ${x(t.currentRole.length - 1 - i)} ${y(
+            t.currentRole[t.currentRole.length - 1 - i]
+          )}`
+      )
       .join(" ") +
     " Z";
 
-  const gap = fiveYearGap(t);
+  const anchor = TRAJECTORY_ANCHOR[pathKey];
 
-  // Y gridlines
-  const gridVals = [40000, 70000, 100000, 130000, 160000].filter(
-    (v) => v <= maxVal && v >= minVal
+  // 3 gridlines across the value range
+  const gridVals = [minVal, (minVal + maxVal) / 2, maxVal * 0.92].map((v) =>
+    Math.round(v)
   );
 
   return (
@@ -60,20 +82,23 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
       <div className="flex items-start justify-between flex-wrap gap-3 mb-5">
         <div>
           <h3 className="text-xl font-semibold text-white tracking-[-0.02em]">
-            Where this path leads
+            Your two futures
           </h3>
           <p className="text-[13px] text-zinc-500 mt-1">
-            Two trajectories from the same starting line.
+            Both start at what you earn today: {formatMoney(salary, currency)}.
           </p>
         </div>
         <div className="text-right">
           <p
-            className="text-2xl font-semibold tabular-nums"
+            className="text-2xl font-semibold tabular-nums leading-none"
             style={{ color: accent }}
           >
-            +{formatUSD(gap)}
+            +{formatMoney(t.fiveYearGap, currency)}
           </p>
-          <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+          <p className="text-[11px] text-zinc-500 tabular-nums mt-0.5">
+            ≈ +{formatMoney(t.fiveYearGapAlt, t.altCurrency)}
+          </p>
+          <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-600 mt-0.5">
             5-year gap
           </p>
         </div>
@@ -93,9 +118,9 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             </linearGradient>
           </defs>
 
-          {/* Y gridlines + labels */}
-          {gridVals.map((v) => (
-            <g key={v}>
+          {/* Y gridlines + labels (dual currency) */}
+          {gridVals.map((v, idx) => (
+            <g key={idx}>
               <line
                 x1={PAD.left}
                 y1={y(v)}
@@ -105,14 +130,14 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
                 strokeWidth="1"
               />
               <text
-                x={PAD.left - 10}
+                x={PAD.left - 12}
                 y={y(v) + 3}
                 textAnchor="end"
                 fill="rgba(255,255,255,0.35)"
                 fontSize="11"
                 fontFamily="monospace"
               >
-                {formatUSD(v)}
+                {formatMoney(v, currency)}
               </text>
             </g>
           ))}
@@ -132,7 +157,7 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             </text>
           ))}
 
-          {/* Opportunity gap area */}
+          {/* Opportunity gap */}
           <motion.path
             d={gapArea}
             fill={`url(#grad-${pathKey})`}
@@ -142,9 +167,9 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             transition={{ duration: 0.8, delay: 0.6 }}
           />
 
-          {/* Baseline line */}
+          {/* Current-role line */}
           <motion.path
-            d={toPath(t.baseline)}
+            d={toPath(t.currentRole)}
             fill="none"
             stroke="rgba(255,255,255,0.3)"
             strokeWidth="2"
@@ -155,9 +180,9 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             transition={{ duration: 1, ease: "easeInOut" }}
           />
 
-          {/* Pathway line */}
+          {/* AI-native line */}
           <motion.path
-            d={toPath(t.pathway)}
+            d={toPath(t.aiNative)}
             fill="none"
             stroke={accent}
             strokeWidth="3"
@@ -168,8 +193,8 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }}
           />
 
-          {/* Pathway dots */}
-          {t.pathway.map((v, i) => (
+          {/* AI-native dots */}
+          {t.aiNative.map((v, i) => (
             <motion.circle
               key={i}
               cx={x(i)}
@@ -185,10 +210,10 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             />
           ))}
 
-          {/* Endpoint value labels */}
+          {/* Endpoint labels */}
           <motion.text
-            x={x(t.pathway.length - 1)}
-            y={y(t.pathway[t.pathway.length - 1]) - 12}
+            x={x(t.aiNative.length - 1)}
+            y={y(t.aiNative[t.aiNative.length - 1]) - 12}
             textAnchor="end"
             fill={accent}
             fontSize="14"
@@ -198,20 +223,20 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             viewport={{ once: true }}
             transition={{ delay: 1.4 }}
           >
-            {formatUSD(t.pathway[t.pathway.length - 1])}
+            {formatMoney(t.aiNative[t.aiNative.length - 1], currency)}
           </motion.text>
           <motion.text
-            x={x(t.baseline.length - 1)}
-            y={y(t.baseline[t.baseline.length - 1]) + 18}
+            x={x(t.currentRole.length - 1)}
+            y={y(t.currentRole[t.currentRole.length - 1]) + 18}
             textAnchor="end"
-            fill="rgba(255,255,255,0.4)"
+            fill="rgba(255,255,255,0.45)"
             fontSize="12"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 1.4 }}
           >
-            {formatUSD(t.baseline[t.baseline.length - 1])}
+            {formatMoney(t.currentRole[t.currentRole.length - 1], currency)}
           </motion.text>
         </svg>
       </div>
@@ -223,7 +248,9 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
             className="w-4 h-[3px] rounded-full"
             style={{ background: accent }}
           />
-          <span className="text-zinc-300">Your {pathKey} path</span>
+          <span className="text-zinc-300">
+            If you go {PATH_VERB[pathKey]}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span
@@ -233,7 +260,9 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
                 "repeating-linear-gradient(90deg, rgba(255,255,255,0.4) 0 3px, transparent 3px 6px)",
             }}
           />
-          <span className="text-zinc-500">If you don&apos;t build new skills</span>
+          <span className="text-zinc-500">
+            If you stay in your current role
+          </span>
         </div>
       </div>
 
@@ -241,14 +270,14 @@ export default function IncomeProjection({ pathKey }: IncomeProjectionProps) {
       <div className="mt-4 pt-4 border-t border-white/5">
         <p className="text-[12px] text-zinc-400">
           <span className="text-zinc-300 font-medium">Reference:</span>{" "}
-          {t.anchor.label}{" "}
-          <span className="text-zinc-600">· {t.anchor.source}</span>
+          {anchor.label}{" "}
+          <span className="text-zinc-600">· {anchor.source}</span>
         </p>
         <p className="text-[11px] text-zinc-600 mt-1.5 leading-relaxed">
-          Illustrative trajectory anchored to U.S. data. Your local figures will
-          differ — the point is the <span className="italic">shape</span> of the
-          opportunity, not a guaranteed salary. Real outcomes depend on the proof
-          you build.
+          Personalised from the salary you entered. The AI-native curve follows
+          the real shape of early-career tech-salary growth; the current-role
+          line reflects typical raises under AI pressure. Illustrative, not a
+          guarantee — real outcomes depend on the proof you build.
         </p>
       </div>
     </div>

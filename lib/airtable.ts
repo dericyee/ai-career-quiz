@@ -22,6 +22,8 @@ export interface LeadPayload {
   country_code?: string | null;
   country_iso?: string | null;
   current_role?: string | null;
+  salary?: number | null;
+  salary_currency?: string | null;
   result_path: string;
   builder_score: number;
   automation_score: number;
@@ -104,6 +106,8 @@ export async function saveLeadToAirtable(
     Email: lead.email,
     Phone: lead.whatsapp || "",
     Role: lead.current_role || "",
+    Salary: lead.salary ?? "",
+    "Salary Currency": lead.salary_currency || "",
     Result: lead.result_path,
     "Builder Score": lead.builder_score,
     "Automation Score": lead.automation_score,

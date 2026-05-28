@@ -47,9 +47,10 @@ export default function PhoneInput({
     };
   }, [open]);
 
-  // Focus search when opening
+  // Reset + focus search when the dropdown opens.
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery("");
       setTimeout(() => searchRef.current?.focus(), 50);
     }

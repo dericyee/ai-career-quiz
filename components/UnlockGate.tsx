@@ -16,7 +16,9 @@ import {
 } from "lucide-react";
 import { PathKey, Scores } from "@/lib/quiz";
 import { DEFAULT_COUNTRY, Country } from "@/lib/countries";
+import { Currency } from "@/lib/income";
 import PhoneInput from "./PhoneInput";
+import { cn } from "@/lib/utils";
 
 const UNLOCKS = [
   {
@@ -60,7 +62,7 @@ interface UnlockGateProps {
   resultPath: PathKey;
   scores: Scores;
   answers: number[];
-  onUnlocked: () => void;
+  onUnlocked: (salary: number, currency: Currency) => void;
 }
 
 export default function UnlockGate({
@@ -74,10 +76,15 @@ export default function UnlockGate({
   const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [currentRole, setCurrentRole] = useState("");
+  const [salary, setSalary] = useState("");
+  const [currency, setCurrency] = useState<Currency>("MYR");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Parse "4,500" / "RM 4500" → 4500
+  const salaryNum = parseInt(salary.replace(/[^\d]/g, ""), 10) || 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -85,7 +92,8 @@ export default function UnlockGate({
       !name.trim() ||
       !email.trim() ||
       !phoneNumber.trim() ||
-      !currentRole.trim()
+      !currentRole.trim() ||
+      salaryNum <= 0
     ) {
       return;
     }
@@ -111,6 +119,8 @@ export default function UnlockGate({
           country_code: trimmedNumber ? country.dial : null,
           country_iso: trimmedNumber ? country.iso : null,
           current_role: currentRole.trim() || null,
+          salary: salaryNum,
+          salary_currency: currency,
           result_path: resultPath,
           builder_score: scores.builder,
           automation_score: scores.automation,
@@ -132,13 +142,15 @@ export default function UnlockGate({
         const key = `cc-unlocked-${resultPath}`;
         localStorage.setItem(key, "1");
         localStorage.setItem(`cc-name`, name.trim().split(" ")[0]);
+        localStorage.setItem(`cc-salary`, String(salaryNum));
+        localStorage.setItem(`cc-currency`, currency);
       } catch {
         // localStorage may be unavailable in some browsers/privacy modes
       }
 
       setStatus("success");
       // Give them a beat to see the success state, then reveal
-      setTimeout(() => onUnlocked(), 700);
+      setTimeout(() => onUnlocked(salaryNum, currency), 700);
     } catch (err) {
       setStatus("error");
       setErrorMsg(
@@ -306,6 +318,40 @@ export default function UnlockGate({
                   />
                 </div>
 
+                {/* Salary + currency — powers the personalised projection */}
+                <div className="flex items-stretch rounded-lg border border-white/10 bg-white/[0.03] focus-within:border-white/30 transition-colors overflow-hidden">
+                  {/* Currency toggle */}
+                  <div className="flex items-center border-r border-white/10">
+                    {(["MYR", "USD"] as Currency[]).map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setCurrency(c)}
+                        className={cn(
+                          "px-3 py-3 text-[13px] font-semibold transition-colors",
+                          currency === c
+                            ? "bg-white/[0.08] text-white"
+                            : "text-zinc-500 hover:text-zinc-300"
+                        )}
+                      >
+                        {c === "MYR" ? "RM" : "$"}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={salary}
+                    onChange={(e) => setSalary(e.target.value)}
+                    placeholder="Current monthly salary"
+                    required
+                    className="flex-1 px-4 py-3 bg-transparent text-[14px] text-white placeholder:text-zinc-500 focus:outline-none"
+                  />
+                </div>
+                <p className="text-[11px] text-zinc-600 -mt-1 px-1">
+                  We use this to personalise your income projection. Never shared.
+                </p>
+
                 {status === "error" && (
                   <p className="text-[13px] text-red-400 leading-snug">
                     {errorMsg}
@@ -319,7 +365,8 @@ export default function UnlockGate({
                     !name.trim() ||
                     !email.trim() ||
                     !phoneNumber.trim() ||
-                    !currentRole.trim()
+                    !currentRole.trim() ||
+                    salaryNum <= 0
                   }
                   className="group w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-white text-black font-semibold text-[14px] transition-all hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed mt-1"
                   style={{

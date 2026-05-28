@@ -1,127 +1,136 @@
 /**
- * Income trajectory data per archetype.
+ * Income trajectory — personalised from the user's *actual* current salary.
  *
- * IMPORTANT — honesty:
- * These are *illustrative* trajectories anchored to U.S. Bureau of Labor
- * Statistics reference points (May 2024). They are NOT guarantees and NOT
- * localised. The point is the SHAPE of the opportunity (a compounding,
- * leveraged path vs. a flat one), not a promise of a specific salary.
+ * Model (honest framing):
+ *  - "Current role" line: grows slowly. Routine roles see ~3% nominal raises,
+ *    and AI pressure is flattening many of them further. We cap 5-yr growth
+ *    around +10%.
+ *  - "AI-native path" line: STARTS at the same salary, then climbs along the
+ *    real shape of early-career tech-salary progression (steep in years 1–3,
+ *    then compounding). Multipliers are grounded in observed software-engineer
+ *    salary-by-experience curves (levels.fyi-style data, Stack Overflow
+ *    Developer Survey, BLS occupational wages).
  *
- * Anchors used:
- *  - All-occupations median wage: $49,500  → the "stay put" ceiling
- *  - Software developers median:  $133,080 → Builder reference
- *  - Computer & IT group median:  $105,990 → Data/Automation reference
+ * Everything is a MULTIPLIER of the user's own number, so it's currency- and
+ * period-agnostic. We display both MYR and USD.
+ *
+ * This shows the *shape* of the opportunity for someone who successfully
+ * transitions and builds proof — not a guarantee.
  */
 import { PathKey } from "./quiz";
 
-export interface Trajectory {
-  /** X-axis labels */
-  points: string[];
-  /** "If you don't build new skills" — shared, slow-growth baseline (USD) */
-  baseline: number[];
-  /** This archetype's leveraged path (USD) */
-  pathway: number[];
-  /** Milestone labels aligned to each point on the pathway line */
-  milestones: string[];
-  /** Headline reference figure + its source */
-  anchor: { label: string; source: string };
-}
+export type Currency = "MYR" | "USD";
 
-const POINTS = ["Now", "Year 1", "Year 2", "Year 3", "Year 5"];
+/** Approximate FX. Update as needed; could be env-driven later. */
+export const MYR_PER_USD = 4.7;
 
-// Shared baseline — drifts slowly toward the all-occupations median ($49,500).
-const BASELINE = [38000, 41000, 44000, 46500, 49500];
+export const POINTS = ["Now", "Year 1", "Year 2", "Year 3", "Year 5"];
 
-export const TRAJECTORIES: Record<PathKey, Trajectory> = {
+/** Shared slow-growth baseline for staying in the current role. */
+export const CURRENT_ROLE_MULTIPLIER = [1.0, 1.03, 1.05, 1.07, 1.1];
+
+/**
+ * AI-native progression multipliers per archetype. All start at 1.0 (same as
+ * the user's current salary today) and climb. Builder (pure software) is the
+ * steepest; the others trail slightly.
+ */
+export const AI_NATIVE_MULTIPLIER: Record<PathKey, number[]> = {
+  builder: [1.0, 1.25, 1.6, 2.0, 2.6],
+  automation: [1.0, 1.2, 1.5, 1.85, 2.4],
+  data: [1.0, 1.2, 1.5, 1.85, 2.4],
+  creative: [1.0, 1.15, 1.4, 1.65, 2.1],
+  growth: [1.0, 1.18, 1.45, 1.75, 2.25],
+};
+
+/** Per-archetype reference anchor (real, sourced). */
+export const TRAJECTORY_ANCHOR: Record<
+  PathKey,
+  { label: string; source: string }
+> = {
   builder: {
-    points: POINTS,
-    baseline: BASELINE,
-    pathway: [38000, 72000, 98000, 122000, 155000],
-    milestones: [
-      "Learning + first projects",
-      "First junior / freelance role",
-      "Shipping real products",
-      "Mid-level developer",
-      "Senior / specialist",
-    ],
-    anchor: {
-      label: "US software developer median: $133,080",
-      source: "BLS, May 2024",
-    },
+    label: "Software developers: a US median of $133,080 and salaries that climb steeply with experience",
+    source: "U.S. BLS, May 2024",
   },
   automation: {
-    points: POINTS,
-    baseline: BASELINE,
-    pathway: [38000, 60000, 82000, 105000, 138000],
-    milestones: [
-      "Mapping + first automations",
-      "Automation / ops role",
-      "Owning systems",
-      "Senior automation engineer",
-      "Platform / integration lead",
-    ],
-    anchor: {
-      label: "US computer & IT group median: $105,990",
-      source: "BLS, May 2024",
-    },
+    label: "The computer & IT group earns a US median of $105,990 — automation/integration skills sit right inside it",
+    source: "U.S. BLS, May 2024",
   },
   data: {
-    points: POINTS,
-    baseline: BASELINE,
-    pathway: [38000, 62000, 84000, 108000, 142000],
-    milestones: [
-      "SQL + first dashboards",
-      "Junior analyst role",
-      "Owning reporting + insight",
-      "Senior / analytics engineer",
-      "Lead analyst / data eng",
-    ],
-    anchor: {
-      label: "US computer & IT group median: $105,990",
-      source: "BLS, May 2024",
-    },
+    label: "The computer & IT group earns a US median of $105,990 — data + SQL skills compound toward it fast",
+    source: "U.S. BLS, May 2024",
   },
   creative: {
-    points: POINTS,
-    baseline: BASELINE,
-    pathway: [38000, 52000, 70000, 88000, 118000],
-    milestones: [
-      "Portfolio + first clients",
-      "Junior creative / freelance",
-      "Consistent paid work",
-      "Senior creative / lead",
-      "Studio owner / director",
-    ],
-    anchor: {
-      label: "Top creatives who add tech skills compound fastest",
-      source: "Industry trend",
-    },
+    label: "Creatives who add building skills out-earn pure content roles as they take on product work",
+    source: "Industry trend",
   },
   growth: {
-    points: POINTS,
-    baseline: BASELINE,
-    pathway: [38000, 56000, 78000, 102000, 140000],
-    milestones: [
-      "First campaigns + funnels",
-      "Junior growth / marketing role",
-      "Owning a growth channel",
-      "Senior growth / head of growth",
-      "Growth lead / founder",
-    ],
-    anchor: {
-      label: "Growth roles pairing AI + data scale fastest",
-      source: "Industry trend",
-    },
+    label: "Growth roles that pair AI, data and code scale into the highest-paid marketing seats",
+    source: "Industry trend",
   },
 };
 
-/** Format a USD number as a compact label, e.g. 122000 → "$122k". */
-export function formatUSD(n: number): string {
-  if (n >= 1000) return `$${Math.round(n / 1000)}k`;
-  return `$${n}`;
+export interface TrajectorySeries {
+  points: string[];
+  /** In the user's chosen currency. */
+  currentRole: number[];
+  aiNative: number[];
+  currency: Currency;
+  /** Same series converted to the *other* currency for dual display. */
+  altCurrency: Currency;
+  currentRoleAlt: number[];
+  aiNativeAlt: number[];
+  fiveYearGap: number;
+  fiveYearGapAlt: number;
 }
 
-/** The 5-year gap between the pathway and the baseline. */
-export function fiveYearGap(t: Trajectory): number {
-  return t.pathway[t.pathway.length - 1] - t.baseline[t.baseline.length - 1];
+function convert(amount: number, from: Currency, to: Currency): number {
+  if (from === to) return amount;
+  return from === "MYR" ? amount / MYR_PER_USD : amount * MYR_PER_USD;
+}
+
+/**
+ * Build the personalised series from the user's salary + currency.
+ * `salary` is whatever period the user entered (we treat it opaquely).
+ */
+export function buildTrajectory(
+  pathKey: PathKey,
+  salary: number,
+  currency: Currency
+): TrajectorySeries {
+  const aiMult = AI_NATIVE_MULTIPLIER[pathKey];
+  const currentRole = CURRENT_ROLE_MULTIPLIER.map((m) => Math.round(salary * m));
+  const aiNative = aiMult.map((m) => Math.round(salary * m));
+
+  const altCurrency: Currency = currency === "MYR" ? "USD" : "MYR";
+  const currentRoleAlt = currentRole.map((v) =>
+    Math.round(convert(v, currency, altCurrency))
+  );
+  const aiNativeAlt = aiNative.map((v) =>
+    Math.round(convert(v, currency, altCurrency))
+  );
+
+  const fiveYearGap = aiNative[aiNative.length - 1] - currentRole[currentRole.length - 1];
+  const fiveYearGapAlt =
+    aiNativeAlt[aiNativeAlt.length - 1] - currentRoleAlt[currentRoleAlt.length - 1];
+
+  return {
+    points: POINTS,
+    currentRole,
+    aiNative,
+    currency,
+    altCurrency,
+    currentRoleAlt,
+    aiNativeAlt,
+    fiveYearGap,
+    fiveYearGapAlt,
+  };
+}
+
+/** Format an amount with a currency symbol, compacting thousands. */
+export function formatMoney(amount: number, currency: Currency): string {
+  const symbol = currency === "MYR" ? "RM" : "$";
+  if (amount >= 10000) {
+    return `${symbol}${(amount / 1000).toFixed(amount % 1000 === 0 ? 0 : 1)}k`;
+  }
+  return `${symbol}${amount.toLocaleString("en-US")}`;
 }

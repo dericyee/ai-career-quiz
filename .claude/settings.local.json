@@ -15,7 +15,13 @@
       "Bash(git push *)",
       "Bash(git commit -m 'Mirror lead to Freebies Signup table *)",
       "Bash(git commit -m 'Sync code default to '\\\\''Freebies Signups'\\\\'' table name *)",
-      "Bash(git commit -m 'Make Phone + Current role required fields *)"
+      "Bash(git commit -m 'Make Phone + Current role required fields *)",
+      "Bash(rm -rf sigmaschool-web)",
+      "Bash(gh repo *)",
+      "Bash(head -60 docs/SEO_STRATEGY.md)",
+      "Bash(sed -n '1,80p' src/app/layout.tsx)",
+      "Bash(npx eslint *)",
+      "Bash(git commit *)"
     ]
   }
 }

@@ -27,12 +27,17 @@ import {
 } from "@/lib/quiz";
 import { getBlendedProfile } from "@/lib/blended";
 import { BLUEPRINTS } from "@/lib/blueprint";
-import { TRAJECTORIES, formatUSD, fiveYearGap } from "@/lib/income";
+import {
+  buildTrajectory,
+  formatMoney,
+  Currency,
+} from "@/lib/income";
 import IdentityCard from "./IdentityCard";
 import UnlockGate from "./UnlockGate";
 import ProofSection from "./ProofSection";
 import SigmaCTA from "./SigmaCTA";
 import IncomeProjection from "./IncomeProjection";
+import SuccessStories from "./SuccessStories";
 
 const PATH_LABELS: Record<PathKey, string> = {
   builder: "Builder",
@@ -63,11 +68,6 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
   const blend = getBlendedProfile(result.key, secondPath);
   const blueprint = BLUEPRINTS[result.key];
   const secondaryResult = RESULT_PATHS[result.secondaryCTAPath];
-  const trajectory = TRAJECTORIES[result.key];
-  const yearGap = fiveYearGap(trajectory);
-  // The "cost of waiting" — roughly the first-year delta you forgo by
-  // staying on the flat path for one more year.
-  const waitingCost = trajectory.pathway[1] - trajectory.baseline[1];
 
   const normalized: Record<PathKey, number> = {
     builder: sorted.find((s) => s.key === "builder")?.pct ?? 0,
@@ -81,18 +81,30 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
   const [firstName, setFirstName] = useState<string>("");
   const [shareUrl, setShareUrl] = useState<string>("");
+  const [salary, setSalary] = useState<number>(0);
+  const [currency, setCurrency] = useState<Currency>("MYR");
 
   useEffect(() => {
+    // Hydrate client-only state from localStorage after mount (can't read it
+    // during SSR). One-time initialisation, intentionally done in an effect.
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const key = `cc-unlocked-${result.key}`;
       setUnlocked(localStorage.getItem(key) === "1");
       setFirstName(localStorage.getItem("cc-name") || "");
+      const storedSalary = parseInt(localStorage.getItem("cc-salary") || "0", 10);
+      if (storedSalary > 0) setSalary(storedSalary);
+      const storedCurrency = localStorage.getItem("cc-currency");
+      if (storedCurrency === "MYR" || storedCurrency === "USD") {
+        setCurrency(storedCurrency);
+      }
     } catch {
       setUnlocked(false);
     }
     if (typeof window !== "undefined") {
       setShareUrl(window.location.href);
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [result.key]);
 
   const [copied, setCopied] = useState(false);
@@ -105,6 +117,13 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
       // ignore
     }
   };
+
+  // Personalised trajectory. Fallback for legacy unlocks captured before we
+  // collected salary (so the chart still renders something sensible).
+  const effectiveSalary = salary > 0 ? salary : currency === "MYR" ? 4000 : 850;
+  const trajectory = buildTrajectory(result.key, effectiveSalary, currency);
+  const waitingCost = trajectory.aiNative[1] - trajectory.currentRole[1];
+  const yearGap = trajectory.fiveYearGap;
 
   return (
     <div className="relative">
@@ -327,7 +346,11 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                   <TrendingUp size={11} className="text-emerald-400" />
                   03 · Where this path could lead
                 </p>
-                <IncomeProjection pathKey={result.key} />
+                <IncomeProjection
+                  pathKey={result.key}
+                  salary={effectiveSalary}
+                  currency={currency}
+                />
               </div>
 
               {/* 04 — The cost of waiting (urgency beat) */}
@@ -340,14 +363,14 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                   <p className="text-2xl sm:text-[28px] font-semibold text-white tracking-[-0.02em] leading-snug mb-3">
                     Every year you stay on the flat line, you leave roughly{" "}
                     <span className="text-amber-300">
-                      {formatUSD(waitingCost)}
+                      {formatMoney(waitingCost, currency)}
                     </span>{" "}
                     of potential on the table.
                   </p>
                   <p className="text-[14px] text-zinc-400 leading-relaxed">
                     Over five years that compounds to a{" "}
                     <span className="text-white font-medium">
-                      {formatUSD(yearGap)}
+                      {formatMoney(yearGap, currency)}
                     </span>{" "}
                     gap. The curve doesn&apos;t reward waiting — it rewards
                     starting and building proof early. The best time to begin was
@@ -485,18 +508,26 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                 </p>
               </div>
 
-              {/* 12 — Sigma CTA */}
+              {/* 12 — Real people who did it (social proof) */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5">
-                  12 · Ready to actually go build this?
+                  12 · Real people who did it
+                </p>
+                <SuccessStories />
+              </div>
+
+              {/* 13 — Sigma CTA */}
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5">
+                  13 · Ready to actually go build this?
                 </p>
                 <SigmaCTA />
               </div>
 
-              {/* 13 — Related path */}
+              {/* 14 — Related path */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5">
-                  13 · Also worth exploring
+                  14 · Also worth exploring
                 </p>
                 <div className="flex items-start gap-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
                   <div className="flex-shrink-0">
