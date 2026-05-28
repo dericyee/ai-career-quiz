@@ -15,6 +15,8 @@ import {
   Sparkles,
   CalendarDays,
   Check,
+  TrendingUp,
+  Hourglass,
 } from "lucide-react";
 import {
   PathKey,
@@ -25,10 +27,12 @@ import {
 } from "@/lib/quiz";
 import { getBlendedProfile } from "@/lib/blended";
 import { BLUEPRINTS } from "@/lib/blueprint";
+import { TRAJECTORIES, formatUSD, fiveYearGap } from "@/lib/income";
 import IdentityCard from "./IdentityCard";
 import UnlockGate from "./UnlockGate";
 import ProofSection from "./ProofSection";
 import SigmaCTA from "./SigmaCTA";
+import IncomeProjection from "./IncomeProjection";
 
 const PATH_LABELS: Record<PathKey, string> = {
   builder: "Builder",
@@ -59,6 +63,11 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
   const blend = getBlendedProfile(result.key, secondPath);
   const blueprint = BLUEPRINTS[result.key];
   const secondaryResult = RESULT_PATHS[result.secondaryCTAPath];
+  const trajectory = TRAJECTORIES[result.key];
+  const yearGap = fiveYearGap(trajectory);
+  // The "cost of waiting" — roughly the first-year delta you forgo by
+  // staying on the flat path for one more year.
+  const waitingCost = trajectory.pathway[1] - trajectory.baseline[1];
 
   const normalized: Record<PathKey, number> = {
     builder: sorted.find((s) => s.key === "builder")?.pct ?? 0,
@@ -279,11 +288,11 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                 </p>
               </div>
 
-              {/* 02 — Blended profile (NEW, gated) */}
+              {/* 02 — Blended profile */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3 flex items-center gap-2">
                   <Sparkles size={11} className="text-indigo-300" />
-                  02 · Your blended profile
+                  02 · The nuance — your blended profile
                 </p>
                 <div
                   className="rounded-2xl border border-white/10 p-7 overflow-hidden relative"
@@ -312,21 +321,56 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                 </div>
               </div>
 
-              {/* 03 — Why now */}
+              {/* 03 — Where this path leads (income trajectory) — the peak */}
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5 flex items-center gap-2">
+                  <TrendingUp size={11} className="text-emerald-400" />
+                  03 · Where this path could lead
+                </p>
+                <IncomeProjection pathKey={result.key} />
+              </div>
+
+              {/* 04 — The cost of waiting (urgency beat) */}
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-4 flex items-center gap-2">
+                  <Hourglass size={11} className="text-amber-400" />
+                  04 · The cost of waiting
+                </p>
+                <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-7">
+                  <p className="text-2xl sm:text-[28px] font-semibold text-white tracking-[-0.02em] leading-snug mb-3">
+                    Every year you stay on the flat line, you leave roughly{" "}
+                    <span className="text-amber-300">
+                      {formatUSD(waitingCost)}
+                    </span>{" "}
+                    of potential on the table.
+                  </p>
+                  <p className="text-[14px] text-zinc-400 leading-relaxed">
+                    Over five years that compounds to a{" "}
+                    <span className="text-white font-medium">
+                      {formatUSD(yearGap)}
+                    </span>{" "}
+                    gap. The curve doesn&apos;t reward waiting — it rewards
+                    starting and building proof early. The best time to begin was
+                    a year ago. The second best is today.
+                  </p>
+                </div>
+              </div>
+
+              {/* 05 — Why now */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3 flex items-center gap-2">
-                  <Rocket size={11} className="text-zinc-500" /> 03 · Why now
+                  <Rocket size={11} className="text-zinc-500" /> 05 · Why now
                 </p>
                 <p className="text-[15px] text-zinc-300 leading-relaxed">
                   {result.whyNow}
                 </p>
               </div>
 
-              {/* 04 — Belief breaker / bridge */}
+              {/* 06 — Belief breaker / bridge */}
               {(result.beliefBreaker || result.bridgeToSoftware) && (
                 <div>
                   <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3 flex items-center gap-2">
-                    <Lightbulb size={11} className="text-zinc-500" /> 04 ·{" "}
+                    <Lightbulb size={11} className="text-zinc-500" /> 06 ·{" "}
                     {result.beliefBreaker
                       ? "The degree question"
                       : "Bridge to tech"}
@@ -337,11 +381,33 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                 </div>
               )}
 
-              {/* 05 — 30-day blueprint (NEW, gated) */}
+              {/* 07 — What to learn first */}
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5 flex items-center gap-2">
+                  <BookOpen size={11} className="text-zinc-500" /> 07 · Skills to learn first
+                </p>
+                <ul className="space-y-2.5">
+                  {result.whatToLearnFirst.map((item, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-[15px] text-zinc-300 leading-relaxed"
+                    >
+                      <CheckCircle2
+                        size={15}
+                        className="text-emerald-400 mt-1 flex-shrink-0"
+                        strokeWidth={2}
+                      />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* 08 — 30-day blueprint */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5 flex items-center gap-2">
                   <CalendarDays size={11} className="text-zinc-500" />
-                  05 · Your 30-day blueprint
+                  08 · Your 30-day blueprint
                 </p>
                 <div className="space-y-3">
                   {blueprint.map((week, i) => (
@@ -380,32 +446,10 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                 </div>
               </div>
 
-              {/* 06 — What to learn first */}
-              <div>
-                <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5 flex items-center gap-2">
-                  <BookOpen size={11} className="text-zinc-500" /> 06 · Skills to learn first
-                </p>
-                <ul className="space-y-2.5">
-                  {result.whatToLearnFirst.map((item, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 text-[15px] text-zinc-300 leading-relaxed"
-                    >
-                      <CheckCircle2
-                        size={15}
-                        className="text-emerald-400 mt-1 flex-shrink-0"
-                        strokeWidth={2}
-                      />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* 07 — First project featured */}
+              {/* 09 — First project featured */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5">
-                  07 · Your first project
+                  09 · Your first project
                 </p>
                 <div
                   className="relative rounded-2xl p-7 overflow-hidden border border-white/10"
@@ -420,20 +464,20 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                 </div>
               </div>
 
-              {/* 08 — What to avoid */}
+              {/* 10 — What to avoid */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3 flex items-center gap-2">
-                  <AlertTriangle size={11} className="text-amber-400" /> 08 · Your blind spots
+                  <AlertTriangle size={11} className="text-amber-400" /> 10 · Your blind spots
                 </p>
                 <p className="text-[15px] text-zinc-300 leading-relaxed">
                   {result.whatToAvoid}
                 </p>
               </div>
 
-              {/* 09 — Proof */}
+              {/* 11 — Proof */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5">
-                  09 · The data behind your match
+                  11 · The data behind your match
                 </p>
                 <ProofSection variant="embedded" />
                 <p className="text-[11px] text-zinc-600 mt-4 text-center font-mono uppercase tracking-wider">
@@ -441,18 +485,18 @@ export default function ResultCard({ result, scores, answers }: ResultCardProps)
                 </p>
               </div>
 
-              {/* 10 — Sigma CTA */}
+              {/* 12 — Sigma CTA */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5">
-                  10 · Ready to actually go build this?
+                  12 · Ready to actually go build this?
                 </p>
                 <SigmaCTA />
               </div>
 
-              {/* 11 — Related path */}
+              {/* 13 — Related path */}
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-5">
-                  11 · Also worth exploring
+                  13 · Also worth exploring
                 </p>
                 <div className="flex items-start gap-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
                   <div className="flex-shrink-0">
