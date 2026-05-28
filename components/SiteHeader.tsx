@@ -38,14 +38,6 @@ export default function SiteHeader({ showRetake, showQuizMeta }: SiteHeaderProps
               ↻ Retake
             </Link>
           )}
-          <a
-            href="https://sigmaschool.co"
-            target="_blank"
-            rel="noreferrer"
-            className="hidden sm:inline-flex items-center gap-1 text-zinc-500 hover:text-white font-medium transition-colors"
-          >
-            sigmaschool.co
-          </a>
         </div>
       </div>
     </header>

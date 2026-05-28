@@ -1,7 +1,10 @@
 import Hero from "@/components/Hero";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import LandingManifesto from "@/components/LandingManifesto";
+import StorySection from "@/components/StorySection";
+import ShareableQuote from "@/components/ShareableQuote";
+import GlobalReach from "@/components/GlobalReach";
+import FinalCTA from "@/components/FinalCTA";
 
 export default function Home() {
   return (
@@ -9,7 +12,10 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
-        <LandingManifesto />
+        <StorySection />
+        <ShareableQuote />
+        <GlobalReach />
+        <FinalCTA />
         <SiteFooter />
       </main>
     </>
