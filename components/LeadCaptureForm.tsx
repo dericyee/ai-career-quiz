@@ -31,7 +31,7 @@ export default function LeadCaptureForm({
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/leads", {
+      const res = await fetch("/ai-career-quiz/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
